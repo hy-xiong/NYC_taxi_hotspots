@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title> New York Taxi Traffic Density Visualization </title>
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="css/3-col-portfolio.css" rel="stylesheet">
+	<link rel="stylesheet" href="maps/d3style.css"/>
+	<link rel="stylesheet" href="maps/leaflet.css"/>
+	<script src = "js/legend.js"></script>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  	<!--Maps-->
+  	<style>
+    	.map{
+    		width: 980px;
+    		height: 520px;
+    	}
+    	h1{
+    		margin-bottom: 1em;
+    	}
+    	pre {
+    		width: 540px;
+    	}
+  	</style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">New York Taxi Trip Visualization</a>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a href="mailto:dengkeliu92@gmail.com">Contact</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Content -->
+    <div class="container">
+        <!-- Projects Row -->
+		    <h1><b>The Kernel Density map for locations of taxi trips in New York City</b></h1>
+			<p style = "font-size: 1.2em;">This project provides an interactive map to allow users to see the spatial pattern of taxi dropoff and pickup locations in a week. Understanding the spatial pattern of taxi service 
+			is useful for urban transportation management. The data is collected from NYC.gov covering 2015/01/05 - 2015/01/11. Only pickup and dropoff time and location are used in this project. 
+			The feature overlapping on the street map is the Kernel Density Surface, which displays the intensity of pickup and dropoff activities. Generally, it is found that all the pickup and 
+			dropoff locations mainly concentrate in Manhattan District's working places, such as World Trade Center. There is also many dropoff and pickup at the airport. Also, the patterns of dropoff 
+			and pickup are different between weekdays and weekends.</p>
+        <pre id="dropoff_mapName" class="lead"><b>Dropoff:</b> <i>2015/01/05</i> Monday  00:00 - 03:00</pre>
+		
+		
+		
+        <div class="row">
+          <div class = "col-sm-11">
+            <div id = "dropoff_map" class = "map"></div>
+          </div>
+
+          <br> </br>
+          <br> </br>
+          <br> </br>
+          <br> </br>
+          <br> </br>
+          <br> </br>
+          <br> </br>
+
+          <div class = "col-sm-1">
+			<canvas id = "dropoff_legend" width = "300" height = "300"></canvas>
+          </div>
+        </div>
+
+        <form>
+          <div class="form-group">
+            <div class="col-sm-2">
+              <select class="form-control" id = "dropoff_day"></select>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-2">
+              <select class="form-control" id = "dropoff_hr"></select>
+            </div>
+          </div>
+        </form>
+
+      <button class="btn btn-default" id = "dropoff_time" type = "button" onclick = "getMap()">OK</button>
+  	  <button class="btn btn-default" id = "dropoff_next" type = "button" onclick = "getMap()">Next</button>
+	  <button class="btn btn-default" id = "dropoff_opacity" type = "button" onclick = "changeOpacity()">Toggle Opacity</button>
+      <br>
+	    </br>
+
+	    <pre id="pickup_mapName" class="lead"><b>Pickup:</b> <i>2015/01/05</i> Monday  00:00 - 03:00</pre>
+
+      <div class="row">
+        <div class = "col-sm-11">
+          <div id = "pickup_map" class = "map"></div>
+        </div>
+
+        <br> </br>
+        <br> </br>
+        <br> </br>
+        <br> </br>
+        <br> </br>
+        <br> </br>
+        <br> </br>
+
+        <div class = "col-sm-1">
+		  <canvas id = "pickup_legend" width = "300" height = "300"></canvas>
+        </div>
+
+      </div>
+
+      <form>
+        <div class="form-group">
+          <div class="col-sm-2">
+    		    <select class="form-control" id = "pickup_day"></select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="col-sm-2">
+      	  <select class="form-control" id = "pickup_hr"></select>
+          </div>
+        </div>
+
+      		<button class="btn btn-default" id = "pickup_time" type = "button" onclick = "getMap()">OK</button>
+      		<button class="btn btn-default" id = "pickup_next" type = "button" onclick = "getMap()">Next</button>
+			<button class="btn btn-default" id = "pickup_opacity" type = "button" onclick = "changeOpacity()">Toggle Opacity</button>
+      </form>
+        <!-- Footer -->
+        <footer>
+            <div class="row">
+                <div class="col-lg-12">
+                    <p>Copyright &copy; Dengke Liu, Haoyi Xiong 2016</p>
+                </div>
+            </div>
+
+        </footer>
+
+        <!-- /.row -->
+        </div>
+
+    </div>
+    <!-- /.container -->
+
+    <!-- jQuery -->
+    <script src="js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+	<script src="maps/d3main.js"></script>
+	<script src="http://d3js.org/d3.v3.min.js"></script>
+	<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+	
+	<script>
+		var days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+		hrBreak = 3
+		for (var d = 0; d < days.length; d++){
+			document.getElementById("dropoff_day").innerHTML += "<option>" + days[d] + "</option>"
+			document.getElementById("pickup_day").innerHTML += "<option>" + days[d] + "</option>"
+		}
+		for (var h = 0; h < 24; h += hrBreak){
+			document.getElementById("dropoff_hr").innerHTML += "<option>" + h.toString() +":00" + "</option>"
+			document.getElementById("pickup_hr").innerHTML += "<option>" + h.toString() + ":00"+ "</option>"
+		}
+		var dropOffMapCtrl = document.getElementById('dropoff_map');
+		var pickupMapCtrl = document.getElementById('pickup_map');
+		var dropoffBaseMap = initalizeBaseMap(dropOffMapCtrl);
+		var pickupBaseMap = initalizeBaseMap(pickupMapCtrl);
+		
+		setMap('maps/jsonData/Dropoff_2015_01_05_00hr_KD_wihtin_Rec_unprj.json', dropOffMapCtrl, dropoffBaseMap)
+		setMap('maps/jsonData/Pickup_2015_01_05_00hr_KD_wihtin_Rec_unprj.json', pickupMapCtrl, pickupBaseMap)
+		setLegend("dropoff", 0.8);
+		setLegend("pickup", 0.8);
+		
+		var year = 2015;
+		var month = 1;
+		var dayOfMonday = 5;
+		var numDays = 7;
+		
+		function getMap(){
+			var ctrl = event.target;
+			var ctrl_id_elements = ctrl.id.split("_");
+			var dayCtrl = document.getElementById(ctrl_id_elements[0] + "_day");
+			var hrCtrl = document.getElementById(ctrl_id_elements[0] + "_hr");
+
+			var day = dayOfMonday + days.indexOf(dayCtrl.value);
+			var hr = parseInt(hrCtrl.value);
+
+			if(ctrl_id_elements[1] == "next"){
+				if(hr + hrBreak >= 24){
+					hrCtrl.selectedIndex =  0;
+					if(dayCtrl.selectedIndex == numDays - 1)
+						dayCtrl.selectedIndex = 0;
+					else
+						dayCtrl.selectedIndex += 1;
+				}else{
+					hrCtrl.selectedIndex +=  1;
+				}
+				day = dayOfMonday + days.indexOf(dayCtrl.value);
+				hr = parseInt(hrCtrl.value);
+			}
+
+			var mapNameCtrl = document.getElementById(ctrl_id_elements[0] + "_mapName");
+			mapNameCtrl.innerHTML = "<b>" + ctrl_id_elements[0].substr(0,1).toUpperCase() + ctrl_id_elements[0].substr(1) + "</b>: <i>" + year.toString() + "/" +
+				padZero(month) + "/" + padZero(day) + "</i> " + dayCtrl.value + "  " + padZero(hr) + ":" + padZero(0) + " - " + padZero(hr+hrBreak) + ":" + padZero(0);
+
+			var mapData = "maps/jsonData/" + ctrl_id_elements[0].substr(0,1).toUpperCase() + ctrl_id_elements[0].substr(1) + "_" + year.toString() + "_" + padZero(month) + "_" + padZero(day) + "_" + padZero(hr) + "hr_KD_wihtin_Rec_unprj.json";
+
+			var mapCtrl = document.getElementById(ctrl_id_elements[0] + "_map");
+			
+			mapCtrl.children[0].children[1].children[1].innerHTML = "";
+			
+			if (ctrl_id_elements[0] == "dropoff")
+				setMap(mapData, mapCtrl, dropoffBaseMap);
+			else
+				setMap(mapData, mapCtrl, pickupBaseMap);
+			setLegend(ctrl_id_elements[0], 0.8);
+			
+			var n = "NaN"
+			function padZero(n){
+				return (n < 10) ? ("0" + n.toString()) : n
+			}
+		}
+		
+		function changeOpacity(){
+			var ctrl = event.target;
+			var ctrl_id_elements = ctrl.id.split("_");
+			var mapCtrl = document.getElementById(ctrl_id_elements[0] + "_map");
+			var paths = mapCtrl.children[0].children[1].children[1].children[0].children[0].children;
+			var changeOpacityClass = "street";
+			var firstClassName = "firstClass";
+			for (var i = 0; i < paths.length; i++){
+				if (paths[i].className["baseVal"].indexOf(firstClassName) == -1){
+					if (paths[i].className["baseVal"].indexOf(changeOpacityClass) > -1){
+						paths[i].className["baseVal"] = paths[i].className["baseVal"].replace(" " + changeOpacityClass, "");
+						paths[i].className["animVal"] = paths[i].className["animVal"].replace(" " + changeOpacityClass, "");
+						setLegend(ctrl_id_elements[0], 0.8);
+					}
+					else{
+						paths[i].className["baseVal"] += " " + changeOpacityClass;
+						paths[i].className["animVal"] += " " + changeOpacityClass;
+						setLegend(ctrl_id_elements[0], 0.2);
+					}
+				}
+			}
+		}
+		
+		function setLegend(name, opacity){
+			var colors = ["#ffffb2", "#fed976", "#feb24c", "#fd8d3c", "#fc4e2a", "#e31a1c", "#b10026"]
+			var dropoffValues = [0.0, 1816.651, 3633.302, 5449.953, 7266.604, 9083.255, 10899.906, 12716.557];
+			var pickupValues = [0.0, 1816.651, 3633.302, 5449.953, 7266.604, 9083.255, 10899.906, 12716.557];
+			if (name  == "dropoff")
+				drawLegend(colors, opacity, dropoffValues, "Dropoff Kernel Density Value", document.getElementById("dropoff_legend"));
+			else
+				drawLegend(colors, opacity, pickupValues, "Pickup Kernel Density Value", document.getElementById("pickup_legend"));
+		}
+	</script>
+</body>
+
+</html>

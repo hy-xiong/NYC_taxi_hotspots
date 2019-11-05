@@ -1,0 +1,25 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Multivariate Geovisualization</title>
+		<!--main stylesheet-->
+		<link rel="stylesheet" href="d3style.css"/>
+		<link rel="stylesheet" href="leaflet.css"/>
+	</head>
+	
+	<body>
+		<!--libraries-->
+		<script src="http://d3js.org/d3.v3.min.js"></script>
+		<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+		
+		<div id="map"></div>
+		<!--link to main JavaScript file-->
+		<script src="d3main.js"></script>
+	</body>
+	
+	<script>
+		var srcJson = "jsonData/Dropoff_2015_01_11_21hr_KD_wihtin_Rec_unprj.json"
+		setMap(srcJson, document.getElementById("map"));
+	</script>
+</html>
